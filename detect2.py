@@ -58,7 +58,6 @@ def detector(image, num):
             text = (str(label)[0]) + ' ' + (str(person_confidences[it])[0:4])
             cv2.putText(image, text, (round(box[0])-10,round(box[1])-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
             it += 1
-            
     #print(persons_in_image)
     persons_in_image = tuple(persons_in_image)
     out_path = 'Output_Annotations/image (' + str(num) +').json'
@@ -68,7 +67,7 @@ def detector(image, num):
                       separators=(',', ': '), ensure_ascii=False)
         outfile.write(to_unicode(str_))
 
-for i in range(1,11):
+'''for i in range(1,11):
     inp_path = 'Test/Test/JPEGImages/' + 'image (' + str(i) + ')' + '.jpg'
     print(inp_path)
     img = cv2.imread(inp_path)
@@ -82,8 +81,9 @@ for i in range(1,11):
     out_path = 'results/'+'Result' + str(i) + '.jpg'
     cv2.imwrite(out_path,img)
     #cv2.waitKey(0)
+'''
 
-for i in range(11,236):
+for i in range(11,21):
     inp_path = 'Test/Test/JPEGImages/' + 'image (' + str(i) + ')' + '.jpg'
     #print(inp_path)
     img = cv2.imread(inp_path)
@@ -93,7 +93,7 @@ for i in range(11,236):
 
     net = cv2.dnn.readNet('yolov3.weights','yolov3.cfg')
     detector(img, i)
-    #cv2.imshow('result',img)
+    cv2.imshow('result',img)
     #out_path = 'results/'+'Result' + str(i) + '.jpg'
     #cv2.imwrite(out_path,img)
-    #cv2.waitKey(0)
+    cv2.waitKey(0)

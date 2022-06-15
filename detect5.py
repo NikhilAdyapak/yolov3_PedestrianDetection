@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import json
-
+import pandas as pd
 import io
 
 try:
@@ -9,7 +9,11 @@ try:
 except NameError:
     to_unicode = str
 
+df = pd.read_csv('output.csv') 
+glob_count = 1
+
 def detector(image, num):
+    global glob_count,df
     height, width = image.shape[:2]
     height = image.shape[0]
     width = image.shape[1]
@@ -39,7 +43,8 @@ def detector(image, num):
 
     pindex = cv2.dnn.NMSBoxes(person_boxes, person_confidences, 0.5, 0.4)
     it = 0
-    persons_in_image = []
+    #persons_in_image = []
+    persons_csv = []
     for i in pindex:
         i = i[0]
         box = person_boxes[i]
@@ -53,20 +58,27 @@ def detector(image, num):
             y = person_boxes[it][1]
             w = person_boxes[it][2]
             h = person_boxes[it][3]
-            persons_in_image.append({'x':x,'y':y,'w':w,'h':h,'conf':str(person_confidences[it])[0:4]})
+            #persons_in_image.append({'x':x,'y':y,'w':w,'h':h,'conf':str(person_confidences[it])[0:4]})
+            dict_csv = {'Sno':glob_count,'Image_num':num,'x':x,'y':y,'w':w,'h':h,'conf':str(person_confidences[it])[0:4]}
+            glob_count += 1
+            persons_csv.append(dict_csv)
             cv2.rectangle(image, (round(box[0]),round(box[1])), (round(box[0]+box[2]),round(box[1]+box[3])), (0,255,0), 2)
             text = (str(label)[0]) + ' ' + (str(person_confidences[it])[0:4])
             cv2.putText(image, text, (round(box[0])-10,round(box[1])-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
             it += 1
             
     #print(persons_in_image)
-    persons_in_image = tuple(persons_in_image)
+    '''persons_in_image = tuple(persons_in_image)
     out_path = 'Output_Annotations/image (' + str(num) +').json'
     with io.open(out_path, 'w', encoding='utf8') as outfile:
         str_ = json.dumps(persons_in_image,
                       indent=4, sort_keys=True,
                       separators=(',', ': '), ensure_ascii=False)
-        outfile.write(to_unicode(str_))
+        outfile.write(to_unicode(str_))'''
+    for i in persons_csv:
+        df = df.append(i,ignore_index = True)
+    
+
 
 for i in range(1,11):
     inp_path = 'Test/Test/JPEGImages/' + 'image (' + str(i) + ')' + '.jpg'
@@ -81,6 +93,7 @@ for i in range(1,11):
     #cv2.imshow('result',img)
     out_path = 'results/'+'Result' + str(i) + '.jpg'
     cv2.imwrite(out_path,img)
+    df.to_csv('output.csv',index = False)
     #cv2.waitKey(0)
 
 for i in range(11,236):
@@ -93,6 +106,7 @@ for i in range(11,236):
 
     net = cv2.dnn.readNet('yolov3.weights','yolov3.cfg')
     detector(img, i)
+    df.to_csv('output.csv',index = False)
     #cv2.imshow('result',img)
     #out_path = 'results/'+'Result' + str(i) + '.jpg'
     #cv2.imwrite(out_path,img)
