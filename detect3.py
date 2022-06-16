@@ -1,6 +1,7 @@
 # Writing YOLOv3 data to JSON File
 
 import numpy as np
+import json
 import cv2
 import io
 import pandas as pd 
@@ -117,7 +118,6 @@ def detector(image, num):
 train_info = creatingInfoData(train_annot)
 test_info = creatingInfoData(test_annot)
 test_images = sorted(glob.glob(os.path.join(test_path,"*.jpg")))
-print(type(test_images), len(test_images))
 color = (255,0,0)
 thickness = 2
 it = 1
@@ -130,4 +130,9 @@ for i in range(1,236):
         coco_classes = [line.strip() for line in f.readlines()]
 
     net = cv2.dnn.readNet('yolov3.weights','yolov3.cfg')
+
+    img_path = test_images[i-1]
+    img_id = img_path.split(".")[0].split("/")[-1]
+    labels = test_info[test_info.name == img_id]
+
     detector(img, i)
