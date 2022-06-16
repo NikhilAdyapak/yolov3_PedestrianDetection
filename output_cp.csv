@@ -1,4 +1,4 @@
-Sno,Image_num,x,y,w,h,conf,gt_x,gt_y,gt_w,gt_h,iou
+Sno,Image_num,x,y,xmax,ymax,conf,gt_x,gt_y,gt_xmax,gt_ymax,iou
 1,1,43.0,34.5,353.0,467.5,0.98,,,,,
 2,2,122.0,78.5,250.0,247.5,0.97,,,,,
 3,3,71.0,106.0,365.0,282.0,0.99,,,,,
