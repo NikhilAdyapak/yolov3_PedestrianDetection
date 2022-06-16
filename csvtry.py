@@ -18,6 +18,8 @@ with open('quotes.csv','a',newline='') as file:
 '''
 import pandas as pd
 df = pd.read_csv('output.csv')
+print(df.iloc[2,9])
+'''
 df.loc[5,'gt_x'] = '156'
 df.to_csv('output.csv',index = False)
 
@@ -28,3 +30,4 @@ print(df)
 
 df.iloc[1] = [2,2,3,4,'NULL','NULL',5,6]
 df.to_csv('output.csv',index = False)
+'''
