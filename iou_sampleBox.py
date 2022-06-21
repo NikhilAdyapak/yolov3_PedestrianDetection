@@ -10,13 +10,6 @@ import glob
 import os
 import warnings as wr
 
-wr.filterwarnings("ignore")
-
-train_path=r'Train/Train/JPEGImages'
-train_annot=r'Train/Train/Annotations'
-
-test_path=r'Test/Test/JPEGImages'
-test_annot=r'Test/Test/Annotations'
 
 def creatingInfoData(Annotpath):
     information={'xmin':[],'ymin':[],'xmax':[],'ymax':[],'ymax':[],'name':[]
@@ -56,7 +49,7 @@ def detector(image, num):
     width = image.shape[1]
     net.setInput(cv2.dnn.blobFromImage(image,0.00392,(416,416),(0,0,0),True,crop=False))
     person_layer_names = net.getLayerNames()
-    person_output_layers = [person_layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+    person_output_layers = [person_layer_names[i[0] - 1 '''i - 1'''] for i in net.getUnconnectedOutLayers()]
     person_outs = net.forward(person_output_layers)
     person_class_ids, person_confidences, person_boxes =[],[],[]
     for operson in person_outs:
@@ -80,6 +73,7 @@ def detector(image, num):
     persons_in_image = []
     for i in pindex:
         i = i[0]
+        #i
         box = person_boxes[i]
         lx=round(box[0]+box[2]/2)
         ly=round(box[1]+box[3])-10
@@ -95,25 +89,34 @@ def detector(image, num):
             cv2.putText(image, text, (round(box[0])-10,round(box[1])-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
             it += 1
 
-train_info = creatingInfoData(train_annot)
-test_info = creatingInfoData(test_annot)
-test_images = sorted(glob.glob(os.path.join(test_path,"*.jpg")))
-color = (255,0,0)
-thickness = 2
+if __name__ == '__main__':
+    wr.filterwarnings("ignore")
 
-for k in range(1,11):
-    img_path = 'Test/Test/JPEGImages/' + 'image (' + str(k) + ')' + '.jpg'
-    img_id = 'image (' + str(k) + ')'
-    labels = test_info[test_info.name == img_id]
-    img = cv2.imread(img_path)
-    coco_classes = None
-    with open('coco.names','r') as f:
-        coco_classes = [line.strip() for line in f.readlines()]
+    train_path=r'Train/Train/JPEGImages'
+    train_annot=r'Train/Train/Annotations'
 
-    net = cv2.dnn.readNet('yolov3.weights','yolov3.cfg')
-    detector(img, k)
-    for index, lab in labels.iterrows():
-        img = cv2.rectangle(img, (lab['xmin'], lab['ymin']), (lab['xmax'], lab['ymax']), color, thickness)
+    test_path=r'Test/Test/JPEGImages'
+    test_annot=r'Test/Test/Annotations'
 
-    out_path = 'results_iou/'+'Result' + str(k) + '.jpg'
-    cv2.imwrite(out_path,img)
+    train_info = creatingInfoData(train_annot)
+    test_info = creatingInfoData(test_annot)
+    test_images = sorted(glob.glob(os.path.join(test_path,"*.jpg")))
+    color = (255,0,0)
+    thickness = 2
+
+    for k in range(1,11):
+        img_path = 'Test/Test/JPEGImages/' + 'image (' + str(k) + ')' + '.jpg'
+        img_id = 'image (' + str(k) + ')'
+        labels = test_info[test_info.name == img_id]
+        img = cv2.imread(img_path)
+        coco_classes = None
+        with open('coco.names','r') as f:
+            coco_classes = [line.strip() for line in f.readlines()]
+
+        net = cv2.dnn.readNet('yolov3.weights','yolov3.cfg')
+        detector(img, k)
+        for index, lab in labels.iterrows():
+            img = cv2.rectangle(img, (lab['xmin'], lab['ymin']), (lab['xmax'], lab['ymax']), color, thickness)
+
+        out_path = 'results_iou/'+'Result' + str(k) + '.jpg'
+        cv2.imwrite(out_path,img)
