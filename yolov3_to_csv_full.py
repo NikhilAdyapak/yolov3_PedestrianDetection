@@ -95,7 +95,7 @@ def detector(image, num, gt_boxes):
     width = image.shape[1]
     net.setInput(cv2.dnn.blobFromImage(image,0.00392,(416,416),(0,0,0),True,crop=False))
     person_layer_names = net.getLayerNames()
-    person_output_layers = [person_layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+    person_output_layers = [person_layer_names[i[0] - 1 '''i - 1'''] for i in net.getUnconnectedOutLayers()]
     person_outs = net.forward(person_output_layers)
     person_class_ids, person_confidences, person_boxes =[],[],[]
     for operson in person_outs:
@@ -118,6 +118,7 @@ def detector(image, num, gt_boxes):
     it = 0
     for i in pindex:
         i = i[0]
+        #i
         box = person_boxes[i]
         lx=round(box[0]+box[2]/2)
         ly=round(box[1]+box[3])-10
